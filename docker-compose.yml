@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: bugboard26_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: bugboard26
+      POSTGRES_USER: bugboard_user
+      POSTGRES_PASSWORD: bugboard_password
+    ports:
+      - 5432:5432
+    volumes:
+      - bugboard26_pgdata:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - bugboard26_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bugboard26_backend
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bugboard26
+      SPRING_DATASOURCE_USERNAME: bugboard_user
+      SPRING_DATASOURCE_PASSWORD: bugboard_password
+     
+ SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWT_SECRET: change_this_secret_in_production
+      ADMIN_DEFAULT_EMAIL: admin@bugboard26.local
+      ADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - 8080:8080
+    networks:
+      - bugboard26_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bugboard26_frontend
+    restart: always
+    depends_on:
+      - backend
+    environment:
+      VITE_API_BASE_URL: http://localhost:8080/api
+    ports:
+      - 5173:5173
+    networks:
+      - bugboard26_network
+
+volumes:
+  bugboard26_pgdata:
+
+networks:
+  bugboard26_network:
+    driver: bridge

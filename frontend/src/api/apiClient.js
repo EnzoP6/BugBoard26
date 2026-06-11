@@ -2,12 +2,7 @@ import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-const apiClient = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+const apiClient = axios.create({baseURL: `${API_BASE_URL}/api`, headers: {"Content-Type": "application/json", }, });
 
 apiClient.interceptors.request.use(
   (config) => {

@@ -1,0 +1,144 @@
+.status-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.38);
+  backdrop-filter: blur(6px);
+}
+
+.status-popup-card {
+  width: min(390px, 100%);
+  position: relative;
+  padding: 34px 28px 26px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top left, rgba(7, 92, 255, 0.12), transparent 34%),
+    #ffffff;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+  text-align: center;
+  animation: statusPopupIn 0.22s ease-out;
+}
+
+.status-popup-card.success {
+  border: 1px solid rgba(34, 197, 94, 0.22);
+}
+
+.status-popup-card.error {
+  border: 1px solid rgba(239, 68, 68, 0.22);
+}
+
+.status-popup-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.status-popup-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.status-popup-icon {
+  width: 66px;
+  height: 66px;
+  margin: 0 auto 16px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+}
+
+.status-popup-card.success .status-popup-icon {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+}
+
+.status-popup-card.error .status-popup-icon {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+}
+
+.status-popup-card h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 850;
+}
+
+.status-popup-card p {
+  margin: 10px 0 24px;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.status-popup-button {
+  width: 100%;
+  border: none;
+  border-radius: 16px;
+  padding: 13px 18px;
+  background: #075cff;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 12px 26px rgba(7, 92, 255, 0.24);
+  transition: 0.2s ease;
+}
+
+.status-popup-button:hover {
+  transform: translateY(-1px);
+  background: #004ee0;
+}
+
+@keyframes statusPopupIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.status-popup-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.status-popup-home-button {
+  min-width: 120px;
+  border: 1px solid #d8e0ec;
+  border-radius: 10px;
+  padding: 10px 18px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.status-popup-home-button:hover {
+  background: #f8fafc;
+}

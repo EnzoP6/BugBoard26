@@ -52,6 +52,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("ADMIN")
 
+                        .requestMatchers(HttpMethod.GET, "/api/issues/*/attachments/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/issues/*/attachments").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/issues/*/attachments").authenticated()
+
                         .requestMatchers(HttpMethod.GET, "/api/issues").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/issues/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/issues").authenticated()
@@ -62,10 +66,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/issues/*/comments").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/api/comments/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/comments/**").authenticated()
-
-                        .requestMatchers(HttpMethod.GET, "/api/issues/*/attachments").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/issues/*/attachments").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/issues/*/attachments/*").permitAll()
 
                         .anyRequest().authenticated()
                 )

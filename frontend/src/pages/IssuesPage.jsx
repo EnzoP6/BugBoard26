@@ -167,6 +167,24 @@ export default function IssuesPage() {
       CRITICAL: 4,
     };
 
+    if (filters.sort === "updatedAt,desc") {
+      result = [...result].sort((a, b) => {
+        const dateA = new Date(a.updatedAt || a.createdAt);
+        const dateB = new Date(b.updatedAt || b.createdAt);
+    
+        return dateB - dateA;
+      });
+    }
+    
+    if (filters.sort === "updatedAt,asc") {
+      result = [...result].sort((a, b) => {
+        const dateA = new Date(a.updatedAt || a.createdAt);
+        const dateB = new Date(b.updatedAt || b.createdAt);
+    
+        return dateA - dateB;
+      });
+    }
+
     if (filters.sort === "priority-lowest") {
       result = [...result].sort((a, b) => {
         return (priorityOrder[a.priority] || 0) - (priorityOrder[b.priority] || 0);

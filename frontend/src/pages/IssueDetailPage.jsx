@@ -2,6 +2,7 @@ import { Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {getIssueById, updateIssueStatus, assignIssue, updateIssue,} from "../api/issuesApi";
+import {getAttachmentsByIssue, uploadAttachment, getAttachmentUrl,} from "../api/attachmentsApi";
 import { getCurrentUser, isAdmin } from "../utils/auth";
 import { getUsers } from "../api/usersApi";
 import IssueCommentsPanel from "../components/IssueCommentsPanel";
@@ -101,9 +102,14 @@ export default function IssueDetailPage() {
   const [saving, setSaving] = useState(false);
   const [users, setUsers] = useState([]);
   const [editMode, setEditMode] = useState(false);
-  const [imageFullscreen, setImageFullscreen] = useState(false);
+  
   const [pageMessage, setPageMessage] = useState("");
   const [popupMessage, setPopupMessage] = useState(null);
+
+  const [attachments, setAttachments] = useState([]);
+  const [selectedAttachment, setSelectedAttachment] = useState(null);
+  const [attachmentLoading, setAttachmentLoading] = useState(false);
+  const [fullscreenAttachment, setFullscreenAttachment] = useState(null);
 
 
   const currentUser = getCurrentUser();
@@ -117,15 +123,17 @@ export default function IssueDetailPage() {
     async function loadData() {
       try {
         const issueData = await getIssueById(id);
-
+        const attachmentsData = await getAttachmentsByIssue(id);
+  
         setIssue(issueData);
+        setAttachments(attachmentsData);
         setStatus(issueData.status || "");
         setDeadline(issueData.dueDate || issueData.deadline || "");
         setAssignedToEmail(issueData.assignedToEmail || issueData.assignedTo?.email || "");
         setTitle(issueData.title || "");
         setDescription(issueData.description || "");
         setPriority(issueData.priority || "");
-
+  
         if (admin) {
           const usersData = await getUsers();
           setUsers(usersData);
@@ -137,9 +145,11 @@ export default function IssueDetailPage() {
         setLoading(false);
       }
     }
-
+  
     loadData();
   }, [id, admin]);
+
+  
 
   async function handleStatusUpdate() {
     if (!canChangeStatus) {
@@ -225,6 +235,34 @@ export default function IssueDetailPage() {
     }
   }
 
+  async function handleUploadAttachment() {
+    if (!selectedAttachment) {
+      return;
+    }
+  
+    try {
+      setAttachmentLoading(true);
+      setPageMessage("");
+  
+      await uploadAttachment(id, selectedAttachment);
+  
+      const refreshedAttachments = await getAttachmentsByIssue(id);
+      setAttachments(refreshedAttachments);
+      setSelectedAttachment(null);
+  
+      setPopupMessage({
+        type: "success",
+        title: "Attachment uploaded",
+        message: "The image attachment has been uploaded successfully.",
+      });
+    } catch (error) {
+      console.error(error);
+      setPageMessage(getErrorMessage(error, "Error uploading attachment."));
+    } finally {
+      setAttachmentLoading(false);
+    }
+  }
+
   if (loading) {
     return (
       <main className="issue-detail-page">
@@ -252,6 +290,11 @@ export default function IssueDetailPage() {
     issue.assignedToName ||
     issue.assignedTo?.email ||
     "Not assigned";
+
+  const canManageAttachments =
+    admin ||
+    assignedEmail === currentUser?.email ||
+    creatorEmail === currentUser?.email;
 
   return (
     <main className="issue-detail-page">
@@ -306,23 +349,46 @@ export default function IssueDetailPage() {
             </div>
           </div>
 
-          <aside className="issue-attachment-column">
-            <h2>📎 Attachment</h2>
-
-            {issue.imageUrl ? (
-              <>
+         <aside className="issue-attachment-column">
+            <h2>📎 Attachments</h2>
+          
+            {canManageAttachments && (
+              <div className="attachment-upload-area">
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={(event) => setSelectedAttachment(event.target.files[0])}
+                />
+          
                 <button
                   type="button"
-                  className="issue-attachment-box"
-                  onClick={() => setImageFullscreen(true)}
-                  aria-label="Open attachment fullscreen"
+                  onClick={handleUploadAttachment}
+                  disabled={!selectedAttachment || attachmentLoading}
                 >
-                  <img
-                    src={`http://localhost:8080${issue.imageUrl}`}
-                    alt="Issue attachment"
-                  />
+                  {attachmentLoading ? "Uploading..." : "Upload image"}
                 </button>
-
+              </div>
+            )}
+          
+            {attachments.length > 0 ? (
+              <>
+                <div className="attachments-preview-list">
+                  {attachments.map((attachment) => (
+                    <button
+                      key={attachment.id}
+                      type="button"
+                      className="issue-attachment-box"
+                      onClick={() => setFullscreenAttachment(attachment)}
+                      aria-label="Open attachment fullscreen"
+                    >
+                      <img
+                        src={getAttachmentUrl(attachment)}
+                        alt={attachment.originalFileName}
+                      />
+                    </button>
+                  ))}
+                </div>
+          
                 <p className="attachment-hint">Click image to view fullscreen</p>
               </>
             ) : (
@@ -479,23 +545,23 @@ export default function IssueDetailPage() {
         </section>
       </div>
 
-      {imageFullscreen && issue.imageUrl && (
+      {fullscreenAttachment && (
         <div
           className="image-fullscreen-overlay"
-          onClick={() => setImageFullscreen(false)}
+          onClick={() => setFullscreenAttachment(null)}
         >
           <button
             type="button"
             className="image-fullscreen-close"
-            onClick={() => setImageFullscreen(false)}
+            onClick={() => setFullscreenAttachment(null)}
             aria-label="Close fullscreen image"
           >
             ×
           </button>
-
+      
           <img
-            src={`http://localhost:8080${issue.imageUrl}`}
-            alt="Issue attachment fullscreen"
+            src={getAttachmentUrl(fullscreenAttachment)}
+            alt={fullscreenAttachment.originalFileName}
             onClick={(event) => event.stopPropagation()}
           />
         </div>

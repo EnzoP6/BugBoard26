@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createIssue } from "../api/issuesApi";
 import { getUsers } from "../api/usersApi";
+import { uploadAttachment } from "../api/attachmentsApi";
 import "./NewIssuePage.css";
 import bugLogo from "../assets/newissue-logo.png";
 import logob from "../assets/bugboard-logob.png";
@@ -66,6 +67,7 @@ export default function NewIssuePage() {
   const [assignedEmailError, setAssignedEmailError] = useState("");
   const [users, setUsers] = useState([]);
   const [statusPopupMessage, setStatusPopupMessage] = useState("");
+  const [selectedAttachment, setSelectedAttachment] = useState(null);
 
   useEffect(() => {
     async function loadUsers() {
@@ -121,8 +123,9 @@ export default function NewIssuePage() {
         ...prev,
         image: null,
       }));
+      setSelectedAttachment(null);
       setImagePreview(null);
-      setImageName("");
+      setImageName("")
       return;
     }
 
@@ -136,11 +139,11 @@ export default function NewIssuePage() {
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
+    if (file.size > 5 * 1024 * 1024) {
       setPopupMessage({
         type: "error",
         title: "File too large",
-        message: "The image cannot be larger than 10 MB.",
+        message: "The image cannot be larger than 5 MB.",
       });
       event.target.value = "";
       return;
@@ -155,6 +158,7 @@ export default function NewIssuePage() {
 
     setImageName(file.name);
     setImagePreview(URL.createObjectURL(file));
+    setSelectedAttachment(file);
   };
 
   const validateForm = () => {
@@ -220,10 +224,12 @@ export default function NewIssuePage() {
         priority: formData.priority || "LOW",
         assignedToEmail: isAdmin ? formData.assignedToEmail || null : null,
         dueDate: isAdmin ? formData.dueDate || null : null,
-        image: formData.image,
       };
 
       const createdIssue = await createIssue(payload);
+      if (selectedAttachment) {
+        await uploadAttachment(createdIssue.id, selectedAttachment);
+      }
 
       setPopupMessage({
         type: "success",
@@ -280,6 +286,7 @@ export default function NewIssuePage() {
 
     setImagePreview(null);
     setImageName("");
+    setSelectedAttachment(null);
     setPopupMessage(null);
     setAssignedEmailError("");
   };
@@ -412,7 +419,7 @@ export default function NewIssuePage() {
                 <span className="upload-icon">☁</span>
                 <strong>{imageName || "Drag and drop a file here "}</strong>
                 <small><br />or click to browse</small>
-                <small> <br />Max size 10 MB, jpg, png, pdf, txt, zip</small>
+                <small> <br />Max size 5 MB, jpg, png</small>
               </label>
 
               <input
@@ -420,7 +427,7 @@ export default function NewIssuePage() {
                 name="image"
                 className="hidden-file-input"
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
                 onChange={handleImageChange}
               />
 

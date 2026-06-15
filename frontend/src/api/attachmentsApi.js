@@ -21,3 +21,7 @@ export const uploadAttachment = async (issueId, file) => {
 
   return response.data;
 };
+
+export const getAttachmentUrl = (attachment) => {
+  return `${import.meta.env.VITE_API_URL}${attachment.url}`;
+};

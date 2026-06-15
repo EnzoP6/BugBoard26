@@ -41,9 +41,9 @@ export default function IssuesPage() {
   const formatDate = (date) => {
     if (!date) return "-";
 
-    return new Date(date).toLocaleDateString("it-IT", {
+    return new Date(date).toLocaleDateString("en-IT", {
       day: "2-digit",
-      month: "2-digit",
+      month: "short",
       year: "numeric",
     });
   };
@@ -51,8 +51,9 @@ export default function IssuesPage() {
   const formatDueDate = (date) => {
     if (!date) return "-";
 
-    return new Date(date).toLocaleDateString("it-IT", {
-      month: "2-digit",
+    return new Date(date).toLocaleDateString("en-IT", {
+      day: "2-digit",
+      month: "short",
       year: "numeric",
     });
   };

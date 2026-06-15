@@ -350,15 +350,27 @@ export default function IssueDetailPage() {
           </div>
 
          <aside className="issue-attachment-column">
-            <h2>📎 Attachments</h2>
+            <h2>Attachments</h2>
           
             {canManageAttachments && (
               <div className="attachment-upload-area">
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={(event) => setSelectedAttachment(event.target.files[0])}
-                />
+                <div className="custom-file-upload">
+                  <input
+                    id="issue-image-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden-file-input"
+                  />
+                
+                  <label htmlFor="issue-image-upload" className="custom-file-button">
+                    📎 Choose image
+                  </label>
+                
+                  <span className="selected-file-name">
+                    {imageName || "No file selected"}
+                  </span>
+                </div>
           
                 <button
                   type="button"

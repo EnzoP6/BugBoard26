@@ -235,6 +235,17 @@ export default function IssueDetailPage() {
     }
   }
 
+  function handleImageChange(event) {
+    const file = event.target.files?.[0];
+  
+    if (!file) {
+      setSelectedAttachment(null);
+      return;
+    }
+  
+    setSelectedAttachment(file);
+  }
+
   async function handleUploadAttachment() {
     if (!selectedAttachment) {
       return;
@@ -368,8 +379,8 @@ export default function IssueDetailPage() {
                   </label>
                 
                   <span className="selected-file-name">
-                    {imageName || "No file selected"}
-                  </span>
+                    {selectedAttachment ? selectedAttachment.name : "No file selected"}
+                  </span> 
                 </div>
           
                 <button

@@ -63,6 +63,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/comments/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/comments/**").authenticated()
 
+                        .requestMatchers(HttpMethod.GET, "/api/issues/*/attachments").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/issues/*/attachments").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/issues/*/attachments/*").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

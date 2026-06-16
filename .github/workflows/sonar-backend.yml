@@ -36,5 +36,4 @@ jobs:
           -Dsonar.host.url=https://sonarcloud.io
           -Dsonar.token=$SONAR_TOKEN
           -Dsonar.sources=src/main/java
-          -Dsonar.tests=src/test/java
           -Dsonar.java.binaries=target/classes

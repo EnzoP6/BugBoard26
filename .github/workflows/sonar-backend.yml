@@ -19,7 +19,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-          cache: maven
+          cache: maven 
 
       - name: Build and analyze backend
         working-directory: backend

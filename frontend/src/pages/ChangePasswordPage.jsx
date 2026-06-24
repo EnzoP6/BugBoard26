@@ -29,6 +29,18 @@ function ChangePasswordPage({ onClose, onSuccess,isPopup = false }) {
     navigate("/issues");
   };
 
+  const handleClearFields = () => {
+    setOldPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+
+    setShowOldPassword(false);
+    setShowNewPassword(false);
+    setShowConfirmPassword(false);
+
+    setError("");
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -189,10 +201,10 @@ function ChangePasswordPage({ onClose, onSuccess,isPopup = false }) {
             <button
               type="button"
               className="change-password-cancel"
-              onClick={handleClose}
+              onClick={handleClearFields}
               disabled={loading}
             >
-              Cancel
+              Clear fields
             </button>
 
             <button
@@ -212,7 +224,7 @@ function ChangePasswordPage({ onClose, onSuccess,isPopup = false }) {
           )}
         </form>
       </div>
-      
+
       {popupMessage && (
         <StatusPopup
           type={popupMessage.type}

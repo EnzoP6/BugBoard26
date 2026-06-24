@@ -520,7 +520,7 @@ export default function NewIssuePage() {
             onClick={handleResetForm}
             disabled={loading}
           >
-            Cancel
+            Clear field
           </button>
 
           <button type="submit" className="btn-primary" disabled={loading}>

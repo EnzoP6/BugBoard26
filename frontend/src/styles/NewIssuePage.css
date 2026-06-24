@@ -117,8 +117,9 @@
 }
 
 .close-button:hover {
-  background: #f8fbff;
-  color: #175cff;
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.35);
 }
 
 .issue-panel {

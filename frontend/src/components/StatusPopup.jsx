@@ -1,5 +1,5 @@
 import { CheckCircle2, AlertTriangle, X, House } from "lucide-react";
-import "../styles/StatusPopup.css";
+import "./StatusPopup.css";
 
 export default function StatusPopup({type = "success", title, message, onClose, actionLabel, onAction, homeLabel, onHome,}) {
   const isSuccess = type === "success";

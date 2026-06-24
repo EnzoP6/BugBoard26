@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { createIssue } from "../api/issuesApi";
 import { getUsers } from "../api/usersApi";
 import { uploadAttachment } from "../api/attachmentsApi";
-import "./NewIssuePage.css";
+import "./styles/NewIssuePage.css";
 import bugLogo from "../assets/newissue-logo.png";
 import logob from "../assets/bugboard-logob.png";
 import StatusPopup from "../components/StatusPopup";

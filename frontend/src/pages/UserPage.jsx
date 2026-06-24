@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { KeyRound, Mail, UserRound, X } from "lucide-react";
-import "./styles/UserPage.css";
+import "../styles/UserPage.css";
 
 export default function UserPage({ onClose, onChangePassword}) {
   const navigate = useNavigate();

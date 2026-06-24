@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getIssues } from "../api/issuesApi";
-import "./IssuesPage.css";
+import "./styles/IssuesPage.css";
 import logo from "../assets/BUGBOARD26.png";
 import createdIssuesIcon from "../assets/created-issues.png";
 import UserPage from "./UserPage";

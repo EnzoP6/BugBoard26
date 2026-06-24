@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createUser } from "../api/usersApi";
 import { Eye, EyeOff, ShieldCheck, Lock, Sparkles } from "lucide-react";
-import "./NewUserPage.css";
+import "./styles/NewUserPage.css";
 
 export default function NewUserPage({ onClose, onSuccess }) {
 

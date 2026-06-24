@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, LockKeyhole, ShieldCheck, Sparkles, X, Save,} from "lucide-react";
 import { changePassword } from "../api/authApi";
 import StatusPopup from "../components/StatusPopup";
-import "./styles/ChangePasswordPage.css";
+import "../styles/ChangePasswordPage.css";
 
 function ChangePasswordPage({ onClose, onSuccess,isPopup = false }) {
   const navigate = useNavigate();

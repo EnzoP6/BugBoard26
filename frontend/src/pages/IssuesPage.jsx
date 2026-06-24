@@ -405,7 +405,7 @@ export default function IssuesPage() {
           </div>
 
           <button type="button" className="reset-filters-button" onClick={handleResetFilters}>
-            Reset
+            Reset filter
           </button>
         </div>
 

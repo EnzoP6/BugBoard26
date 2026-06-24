@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Lock, LogIn, UserRound } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import "./styles/LoginPage.css";
+import "../styles/LoginPage.css";
 import logo from "../assets/bugboard-login.png";
 import logob from "../assets/bugboard-logob.png";
 

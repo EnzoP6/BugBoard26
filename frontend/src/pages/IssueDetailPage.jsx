@@ -2,12 +2,11 @@ import { Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {getIssueById, updateIssueStatus, assignIssue, updateIssue,} from "../api/issuesApi";
-import {getAttachmentsByIssue, uploadAttachment, getAttachmentUrl,} from "../api/attachmentsApi";
 import { getCurrentUser, isAdmin } from "../utils/auth";
 import { getUsers } from "../api/usersApi";
 import IssueCommentsPanel from "../components/IssueCommentsPanel";
 import StatusPopup from "../components/StatusPopup";
-import "./IssueDetailPage.css"
+import "../styles/IssueDetailPage.css"
 
 import logo from "../assets/bugboard-logob.png";
 
@@ -102,14 +101,10 @@ export default function IssueDetailPage() {
   const [saving, setSaving] = useState(false);
   const [users, setUsers] = useState([]);
   const [editMode, setEditMode] = useState(false);
-  
+  const [imageFullscreen, setImageFullscreen] = useState(false);
   const [pageMessage, setPageMessage] = useState("");
   const [popupMessage, setPopupMessage] = useState(null);
-
-  const [attachments, setAttachments] = useState([]);
-  const [selectedAttachment, setSelectedAttachment] = useState(null);
-  const [attachmentLoading, setAttachmentLoading] = useState(false);
-  const [fullscreenAttachment, setFullscreenAttachment] = useState(null);
+  const [statusEditMode, setStatusEditMode] = useState(false);
 
 
   const currentUser = getCurrentUser();
@@ -123,17 +118,15 @@ export default function IssueDetailPage() {
     async function loadData() {
       try {
         const issueData = await getIssueById(id);
-        const attachmentsData = await getAttachmentsByIssue(id);
-  
+
         setIssue(issueData);
-        setAttachments(attachmentsData);
         setStatus(issueData.status || "");
         setDeadline(issueData.dueDate || issueData.deadline || "");
         setAssignedToEmail(issueData.assignedToEmail || issueData.assignedTo?.email || "");
         setTitle(issueData.title || "");
         setDescription(issueData.description || "");
         setPriority(issueData.priority || "");
-  
+
         if (admin) {
           const usersData = await getUsers();
           setUsers(usersData);
@@ -145,11 +138,9 @@ export default function IssueDetailPage() {
         setLoading(false);
       }
     }
-  
+
     loadData();
   }, [id, admin]);
-
-  
 
   async function handleStatusUpdate() {
     if (!canChangeStatus) {
@@ -164,6 +155,7 @@ export default function IssueDetailPage() {
       const updated = await updateIssueStatus(id, status);
 
       setIssue(updated);
+      setStatusEditMode(false);
       setPopupMessage({
         type: "success",
         title: "Status saved",
@@ -193,6 +185,8 @@ export default function IssueDetailPage() {
         priority: priority || null,
         dueDate: deadline || null,
       });
+
+      await updateIssueStatus(id, status);
 
       if (assignedToEmail) {
         await assignIssue(id, assignedToEmail);
@@ -235,45 +229,6 @@ export default function IssueDetailPage() {
     }
   }
 
-  function handleImageChange(event) {
-    const file = event.target.files?.[0];
-  
-    if (!file) {
-      setSelectedAttachment(null);
-      return;
-    }
-  
-    setSelectedAttachment(file);
-  }
-
-  async function handleUploadAttachment() {
-    if (!selectedAttachment) {
-      return;
-    }
-  
-    try {
-      setAttachmentLoading(true);
-      setPageMessage("");
-  
-      await uploadAttachment(id, selectedAttachment);
-  
-      const refreshedAttachments = await getAttachmentsByIssue(id);
-      setAttachments(refreshedAttachments);
-      setSelectedAttachment(null);
-  
-      setPopupMessage({
-        type: "success",
-        title: "Attachment uploaded",
-        message: "The image attachment has been uploaded successfully.",
-      });
-    } catch (error) {
-      console.error(error);
-      setPageMessage(getErrorMessage(error, "Error uploading attachment."));
-    } finally {
-      setAttachmentLoading(false);
-    }
-  }
-
   if (loading) {
     return (
       <main className="issue-detail-page">
@@ -302,11 +257,6 @@ export default function IssueDetailPage() {
     issue.assignedTo?.email ||
     "Not assigned";
 
-  const canManageAttachments =
-    admin ||
-    assignedEmail === currentUser?.email ||
-    creatorEmail === currentUser?.email;
-
   return (
     <main className="issue-detail-page">
       <img src={logo} alt="BugBoard26 background logo" className="issue-detail-background-logo" />
@@ -328,6 +278,16 @@ export default function IssueDetailPage() {
                 onClick={() => setEditMode((currentValue) => !currentValue)}
               >
                 ✎ Edit issue
+              </button>
+            )}
+
+            {!canEditFull && canChangeStatus && (
+              <button
+                type="button"
+                className="edit-issue-button"
+                onClick={() => setStatusEditMode((currentValue) => !currentValue)}
+              >
+                ✎ Edit status
               </button>
             )}
 
@@ -360,58 +320,23 @@ export default function IssueDetailPage() {
             </div>
           </div>
 
-         <aside className="issue-attachment-column">
-            <h2>Attachments</h2>
-          
-            {canManageAttachments && (
-              <div className="attachment-upload-area">
-                <div className="custom-file-upload">
-                  <input
-                    id="issue-image-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden-file-input"
-                  />
-                
-                  <label htmlFor="issue-image-upload" className="custom-file-button">
-                    📎 Choose image
-                  </label>
-                
-                  <span className="selected-file-name">
-                    {selectedAttachment ? selectedAttachment.name : "No file selected"}
-                  </span> 
-                </div>
-          
+          <aside className="issue-attachment-column">
+            <h2>📎 Attachment</h2>
+
+            {issue.imageUrl ? (
+              <>
                 <button
                   type="button"
-                  onClick={handleUploadAttachment}
-                  disabled={!selectedAttachment || attachmentLoading}
+                  className="issue-attachment-box"
+                  onClick={() => setImageFullscreen(true)}
+                  aria-label="Open attachment fullscreen"
                 >
-                  {attachmentLoading ? "Uploading..." : "Upload image"}
+                  <img
+                    src={`http://localhost:8080${issue.imageUrl}`}
+                    alt="Issue attachment"
+                  />
                 </button>
-              </div>
-            )}
-          
-            {attachments.length > 0 ? (
-              <>
-                <div className="attachments-preview-list">
-                  {attachments.map((attachment) => (
-                    <button
-                      key={attachment.id}
-                      type="button"
-                      className="issue-attachment-box"
-                      onClick={() => setFullscreenAttachment(attachment)}
-                      aria-label="Open attachment fullscreen"
-                    >
-                      <img
-                        src={getAttachmentUrl(attachment)}
-                        alt={attachment.originalFileName}
-                      />
-                    </button>
-                  ))}
-                </div>
-          
+
                 <p className="attachment-hint">Click image to view fullscreen</p>
               </>
             ) : (
@@ -422,10 +347,10 @@ export default function IssueDetailPage() {
           </aside>
         </section>
 
-        {canChangeStatus && (
+        {!canEditFull && statusEditMode && canChangeStatus && (
           <section className="issue-status-card">
             <div>
-              <h2>Change status</h2>
+              <h2>Edit status</h2>
               <p>Update the current progress of this issue.</p>
             </div>
 
@@ -479,6 +404,19 @@ export default function IssueDetailPage() {
                   <option value="MEDIUM">MEDIUM</option>
                   <option value="HIGH">HIGH</option>
                   <option value="CRITICAL">CRITICAL</option>
+                </select>
+              </label>
+
+              <label>
+                Status
+                <select
+                  value={status}
+                  onChange={(event) => setStatus(event.target.value)}
+                >
+                  <option value="TODO">TODO</option>
+                  <option value="IN_PROGRESS">IN PROGRESS</option>
+                  <option value="RESOLVED">RESOLVED</option>
+                  <option value="CLOSED">CLOSED</option>
                 </select>
               </label>
 
@@ -568,23 +506,23 @@ export default function IssueDetailPage() {
         </section>
       </div>
 
-      {fullscreenAttachment && (
+      {imageFullscreen && issue.imageUrl && (
         <div
           className="image-fullscreen-overlay"
-          onClick={() => setFullscreenAttachment(null)}
+          onClick={() => setImageFullscreen(false)}
         >
           <button
             type="button"
             className="image-fullscreen-close"
-            onClick={() => setFullscreenAttachment(null)}
+            onClick={() => setImageFullscreen(false)}
             aria-label="Close fullscreen image"
           >
             ×
           </button>
-      
+
           <img
-            src={getAttachmentUrl(fullscreenAttachment)}
-            alt={fullscreenAttachment.originalFileName}
+            src={`http://localhost:8080${issue.imageUrl}`}
+            alt="Issue attachment fullscreen"
             onClick={(event) => event.stopPropagation()}
           />
         </div>

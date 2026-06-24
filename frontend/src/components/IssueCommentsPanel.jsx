@@ -1,7 +1,7 @@
 import { MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createComment, deleteComment, getComments, updateComment} from "../api/commentsApi.js";
-import "../pages/IssueDetailPage.css"
+import "../styles/IssueDetailPage.css"
 
 export default function IssueCommentsPanel({ issueId, currentUser }) {
   const [comments, setComments] = useState([]);

@@ -182,10 +182,11 @@
 
 .filters-row {
   display: grid;
-  grid-template-columns: 125px repeat(5, minmax(120px, 1fr)) 220px 82px;
+  grid-template-columns: 125px repeat(5, minmax(120px, 1fr)) 220px 118px;
   gap: 12px;
   align-items: center;
   margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 .filters-title {
@@ -669,22 +670,23 @@
 }
 
 .reset-filters-button {
-  height: 42px;
-  border: 1px solid #dce6f7;
-  background: #ffffff;
-  color: #075cff;
-  border-radius: 10px;
-  font-size: 13px;
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid #ef4444;
+  background: rgba(239, 68, 68, 0.06);
+  color: #ef4444;
   font-weight: 900;
+  font-size: 14px;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(18, 58, 120, 0.04);
-  transition: 0.2s ease;
+  white-space: nowrap;
+  transition: all 0.2s ease;
 }
 
 .reset-filters-button:hover {
-  transform: translateY(-1px);
-  border-color: #78a9ff;
-  background: #f6faff;
+  background: #ef4444;
+  color: #ffffff;
 }
 
 .secondary-action.new-user-topbar-button {

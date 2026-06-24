@@ -89,8 +89,9 @@
 }
 
 .new-user-close:hover {
-  background: #f8fafc;
-  color: #101828;
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.35);
 }
 
 .new-user-form {

@@ -270,7 +270,7 @@ export default function NewUserPage({ onClose, onSuccess }) {
               onClick={resetForm}
               disabled={loading}
             >
-              Cancel
+              Clear field
             </button>
 
             <button type="submit" className="new-user-submit" disabled={loading}>

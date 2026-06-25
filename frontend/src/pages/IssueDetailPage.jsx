@@ -104,15 +104,13 @@ export default function IssueDetailPage() {
   const [imageFullscreen, setImageFullscreen] = useState(false);
   const [pageMessage, setPageMessage] = useState("");
   const [popupMessage, setPopupMessage] = useState(null);
-  const [statusEditMode, setStatusEditMode] = useState(false);
-
 
   const currentUser = getCurrentUser();
   const admin = isAdmin();
 
   const assignedEmail = issue?.assignedToEmail || issue?.assignedTo?.email || "";
-  const canChangeStatus = admin || assignedEmail === currentUser?.email;
-  const canEditFull = admin;
+  const canEditIssue = admin || assignedEmail === currentUser?.email;
+  const canAssignIssue = admin;
 
   useEffect(() => {
     async function loadData() {
@@ -142,36 +140,9 @@ export default function IssueDetailPage() {
     loadData();
   }, [id, admin]);
 
-  async function handleStatusUpdate() {
-    if (!canChangeStatus) {
-      setPageMessage("You do not have permission to modify this issue.");
-      return;
-    }
-
-    try {
-      setSaving(true);
-      setPageMessage("");
-
-      const updated = await updateIssueStatus(id, status);
-
-      setIssue(updated);
-      setStatusEditMode(false);
-      setPopupMessage({
-        type: "success",
-        title: "Status saved",
-        message: "The issue status has been updated successfully.",
-      });
-    } catch (error) {
-      console.error(error);
-      setPageMessage(getErrorMessage(error, "Status update error."));
-    } finally {
-      setSaving(false);
-    }
-  }
-
   async function handleAdminUpdate() {
-    if (!admin) {
-      setPageMessage("Only administrators can modify this data.");
+    if (!canEditIssue) {
+      setPageMessage("You do not have permission to modify this issue.");
       return;
     }
 
@@ -188,7 +159,7 @@ export default function IssueDetailPage() {
 
       await updateIssueStatus(id, status);
 
-      if (assignedToEmail) {
+      if (canAssignIssue && assignedToEmail) {
         await assignIssue(id, assignedToEmail);
       }
 
@@ -271,7 +242,7 @@ export default function IssueDetailPage() {
           </button>
 
           <div className="issue-detail-actions">
-            {canEditFull && (
+            {canEditIssue && (
               <button
                 type="button"
                 className="edit-issue-button"
@@ -281,15 +252,7 @@ export default function IssueDetailPage() {
               </button>
             )}
 
-            {!canEditFull && canChangeStatus && (
-              <button
-                type="button"
-                className="edit-issue-button"
-                onClick={() => setStatusEditMode((currentValue) => !currentValue)}
-              >
-                ✎ Edit status
-              </button>
-            )}
+            
 
           </div>
         </div>
@@ -347,42 +310,9 @@ export default function IssueDetailPage() {
           </aside>
         </section>
 
-        {!canEditFull && statusEditMode && canChangeStatus && (
-          <section className="issue-status-card">
-            <div>
-              <h2>Edit status</h2>
-              <p>Update the current progress of this issue.</p>
-            </div>
-
-            <div className="issue-status-controls">
-              <select
-                value={status}
-                onChange={(event) => setStatus(event.target.value)}
-                disabled={saving}
-              >
-                <option value="TODO">TODO</option>
-                <option value="IN_PROGRESS">IN PROGRESS</option>
-                <option value="RESOLVED">RESOLVED</option>
-                <option value="CLOSED">CLOSED</option>
-              </select>
-
-              <button
-                type="button"
-                onClick={handleStatusUpdate}
-                disabled={saving}
-              >
-                <span className="save-button-content">
-                  <Save size={15} strokeWidth={2.4} />
-                  Save status
-                </span>
-              </button>
-            </div>
-          </section>
-        )}
-
-        {editMode && canEditFull && (
+        {editMode && canEditIssue && (
           <section className="issue-edit-card">
-            <h2>Administrator edit</h2>
+            <h2>Edit issue</h2>
 
             <div className="issue-edit-grid">
               <label>
@@ -414,7 +344,7 @@ export default function IssueDetailPage() {
                   onChange={(event) => setStatus(event.target.value)}
                 >
                   <option value="TODO">TODO</option>
-                  <option value="IN_PROGRESS">IN PROGRESS</option>
+                  <option value="IN_PROGRESS">WORK IN PROGRESS</option>
                   <option value="RESOLVED">RESOLVED</option>
                   <option value="CLOSED">CLOSED</option>
                 </select>
@@ -429,36 +359,40 @@ export default function IssueDetailPage() {
                 />
               </label>
 
-              <label>
-                Deadline
-                <input
-                  type="date"
-                  value={deadline || ""}
-                  min={new Date().toISOString().split("T")[0]}
-                  onChange={(event) => setDeadline(event.target.value)}
-                />
-              </label>
+              {canAssignIssue && (
+                <label>
+                  Deadline
+                  <input
+                    type="date"
+                    value={deadline || ""}
+                    min={new Date().toISOString().split("T")[0]}
+                    onChange={(event) => setDeadline(event.target.value)}
+                  />
+                </label>
+              )}
 
-              <label>
-                Assigned to
-                <select
-                  value={assignedToEmail}
-                  onChange={(event) => setAssignedToEmail(event.target.value)}
-                >
-                  <option value="">Not assigned</option>
+              {canAssignIssue && (
+                <label>
+                  Assigned to
+                  <select
+                    value={assignedToEmail}
+                    onChange={(event) => setAssignedToEmail(event.target.value)}
+                  >
+                    <option value="">Not assigned</option>
 
-                  {users.map((user) => (
-                    <option key={user.id} value={user.email}>
-                      {user.email}{" "}
-                      {user.email === currentUser?.email
-                        ? "(You)"
-                        : user.role === "ADMIN"
-                        ? "(Admin)"
-                        : ""}
-                    </option>
-                  ))}
-                </select>
-              </label>
+                    {users.map((user) => (
+                      <option key={user.id} value={user.email}>
+                        {user.email}{" "}
+                        {user.email === currentUser?.email
+                          ? "(You)"
+                          : user.role === "ADMIN"
+                          ? "(Admin)"
+                          : ""}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
             </div>
 
             <div className="issue-edit-actions">

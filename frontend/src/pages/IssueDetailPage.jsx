@@ -444,7 +444,7 @@ export default function IssueDetailPage() {
         </section>
       </div>
 
-      {imageFullscreen && issue.imageUrl && (
+      {imageFullscreen && issueImageUrl && (
         <div
           className="image-fullscreen-overlay"
           onClick={() => setImageFullscreen(false)}
@@ -457,9 +457,9 @@ export default function IssueDetailPage() {
           >
             ×
           </button>
-
+      
           <img
-            src={`http://localhost:8080${issue.imageUrl}`}
+            src={issueImageUrl}
             alt="Issue attachment fullscreen"
             onClick={(event) => event.stopPropagation()}
           />

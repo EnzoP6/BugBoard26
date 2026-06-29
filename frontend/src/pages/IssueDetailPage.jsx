@@ -288,7 +288,7 @@ export default function IssueDetailPage() {
           <aside className="issue-attachment-column">
             <h2>📎 Attachment</h2>
 
-            {issueImageUrl && (
+            {issueImageUrl ? (
                
               <>
                 <button

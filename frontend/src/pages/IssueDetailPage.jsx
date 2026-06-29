@@ -293,7 +293,7 @@ export default function IssueDetailPage() {
               <>
                 <button
                   type="button"
-                  className="issue-detail-image-wrapper">
+                  className="issue-detail-image-wrapper"
                   onClick={() => setImageFullscreen(true)}
                   aria-label="Open attachment fullscreen"
                 >

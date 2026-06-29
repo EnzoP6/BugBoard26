@@ -118,7 +118,8 @@ export default function IssueDetailPage() {
     async function loadData() {
       try {
         const issueData = await getIssueById(id);
-
+        console.log("ISSUE DETAIL RESPONSE:", issueData);
+        
         setIssue(issueData);
         setStatus(issueData.status || "");
         setDeadline(issueData.dueDate || issueData.deadline || "");

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {getIssueById, updateIssueStatus, assignIssue, updateIssue,} from "../api/issuesApi";
 import { getCurrentUser, isAdmin } from "../utils/auth";
 import { getUsers } from "../api/usersApi";
+import { getIssueImageUrl } from "../utils/imageUrl";
 import IssueCommentsPanel from "../components/IssueCommentsPanel";
 import StatusPopup from "../components/StatusPopup";
 import "../styles/IssueDetailPage.css"
@@ -111,7 +112,8 @@ export default function IssueDetailPage() {
   const assignedEmail = issue?.assignedToEmail || issue?.assignedTo?.email || "";
   const canEditIssue = admin || assignedEmail === currentUser?.email;
   const canAssignIssue = admin;
-
+  const issueImageUrl = getIssueImageUrl(issue?.imageUrl || issue?.imagePath || issue?.image);
+  
   useEffect(() => {
     async function loadData() {
       try {
@@ -286,17 +288,19 @@ export default function IssueDetailPage() {
           <aside className="issue-attachment-column">
             <h2>📎 Attachment</h2>
 
-            {issue.imageUrl ? (
+            {issueImageUrl && (
+               
               <>
                 <button
                   type="button"
-                  className="issue-attachment-box"
+                  className="issue-detail-image-wrapper">
                   onClick={() => setImageFullscreen(true)}
                   aria-label="Open attachment fullscreen"
                 >
                   <img
-                    src={`http://localhost:8080${issue.imageUrl}`}
-                    alt="Issue attachment"
+                    src={issueImageUrl}
+                    alt={`IIssue attachment`}
+                    className="issue-detail-image"
                   />
                 </button>
 

@@ -11,6 +11,7 @@ export default function IssueCommentsPanel({ issueId, currentUser }) {
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
   const [error, setError] = useState("");
+  const [popupMessage, setPopupMessage] = useState(null);
   const [commentToDelete, setCommentToDelete] = useState(null);
 
   useEffect(() => {
@@ -94,8 +95,14 @@ export default function IssueCommentsPanel({ issueId, currentUser }) {
   }
 
   function handleDelete(commentId) {
-  setCommentToDelete(commentId);
-}
+    setCommentToDelete(commentId);
+  
+    setPopupMessage({
+      type: "error",
+      title: "Delete comment",
+      message: "Are you sure you want to delete this comment?",
+    });
+  }
 
 async function confirmDelete() {
   if (!commentToDelete) {
@@ -111,6 +118,7 @@ async function confirmDelete() {
       prev.filter((comment) => comment.id !== commentToDelete)
     );
 
+    setPopupMessage(null);
     setCommentToDelete(null);
   } catch (err) {
     console.error("Errore eliminazione commento:", err);
@@ -122,6 +130,7 @@ async function confirmDelete() {
         "Impossibile eliminare il commento."
     );
 
+    setPopupMessage(null);
     setCommentToDelete(null);
   }
 }
@@ -300,16 +309,6 @@ async function confirmDelete() {
                         </button>
                       )}
 
-                      {commentToDelete && (
-                        <StatusPopup
-                          type="confirm"
-                          title="Delete comment?"
-                          message="Are you sure you want to delete this comment? This action cannot be undone."
-                          onClose={() => setCommentToDelete(null)}
-                          homeLabel="Delete"
-                          onHome={confirmDelete}
-                        />
-                      )}
                     </div>
                   </div>
                 )}
@@ -318,6 +317,20 @@ async function confirmDelete() {
           ))
         )}
       </div>
+
+      {popupMessage && (
+        <StatusPopup
+          type={popupMessage.type}
+          title={popupMessage.title}
+          message={popupMessage.message}
+          onClose={() => {
+            setPopupMessage(null);
+            setCommentToDelete(null);
+          }}
+          homeLabel="Delete"
+          onHome={confirmDelete}
+        />
+      )}
     </div>
   );
 }

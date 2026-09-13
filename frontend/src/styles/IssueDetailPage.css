@@ -822,3 +822,15 @@
 }
 
 
+.comment-form-actions .comment-cancel-button {
+  background: #ffffff !important;
+  color: #334155 !important;
+  border: 1px solid #d8e0ec !important;
+  box-shadow: none;
+}
+
+.comment-form-actions .comment-cancel-button:hover {
+  background: #eff6ff !important;
+  color: #2563eb !important;
+  border-color: #8bbdff !important;
+}

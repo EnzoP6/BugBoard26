@@ -2,6 +2,7 @@ import { MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createComment, deleteComment, getComments, updateComment} from "../api/commentsApi.js";
 import "../styles/IssueDetailPage.css"
+import StatusPopup from "./StatusPopup";
 
 export default function IssueCommentsPanel({ issueId, currentUser }) {
   const [comments, setComments] = useState([]);
@@ -10,6 +11,7 @@ export default function IssueCommentsPanel({ issueId, currentUser }) {
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
   const [error, setError] = useState("");
+  const [commentToDelete, setCommentToDelete] = useState(null);
 
   useEffect(() => {
     if (issueId) {
@@ -91,30 +93,38 @@ export default function IssueCommentsPanel({ issueId, currentUser }) {
     }
   }
 
-  async function handleDelete(commentId) {
-    const confirmed = window.confirm("Vuoi davvero eliminare questo commento?");
+  function handleDelete(commentId) {
+  setCommentToDelete(commentId);
+}
 
-    if (!confirmed) {
-      return;
-    }
-
-    try {
-      setError("");
-      await deleteComment(commentId);
-
-      setComments((prev) =>
-        prev.filter((comment) => comment.id !== commentId)
-      );
-    } catch (err) {
-      console.error("Errore eliminazione commento:", err);
-      setError(
-        err?.response?.data?.message ||
-          err?.response?.data?.error ||
-          err?.response?.data ||
-          "Impossibile eliminare il commento."
-      );
-    }
+async function confirmDelete() {
+  if (!commentToDelete) {
+    return;
   }
+
+  try {
+    setError("");
+
+    await deleteComment(commentToDelete);
+
+    setComments((prev) =>
+      prev.filter((comment) => comment.id !== commentToDelete)
+    );
+
+    setCommentToDelete(null);
+  } catch (err) {
+    console.error("Errore eliminazione commento:", err);
+
+    setError(
+      err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.response?.data ||
+        "Impossibile eliminare il commento."
+    );
+
+    setCommentToDelete(null);
+  }
+}
 
   function canEdit(comment) {
     return currentUser?.email === comment.authorEmail;
@@ -288,6 +298,17 @@ export default function IssueCommentsPanel({ issueId, currentUser }) {
                         >
                           Delete
                         </button>
+                      )}
+
+                      {commentToDelete && (
+                        <StatusPopup
+                          type="error"
+                          title="Delete comment?"
+                          message="Are you sure you want to delete this comment? This action cannot be undone."
+                          onClose={() => setCommentToDelete(null)}
+                          homeLabel="Delete"
+                          onHome={confirmDelete}
+                        />
                       )}
                     </div>
                   </div>

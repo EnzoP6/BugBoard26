@@ -321,6 +321,7 @@ async function confirmDelete() {
       {popupMessage && (
         <StatusPopup
           type={popupMessage.type}
+          variant="delete-comment"
           title={popupMessage.title}
           message={popupMessage.message}
           onClose={() => {

@@ -142,3 +142,38 @@
 .status-popup-home-button:hover {
   background: #f8fafc;
 }
+
+.status-popup-delete-button {
+  background: transparent;
+  border: none;
+  color: #d92d20;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 10px 16px;
+  border-radius: 10px;
+  transition: 0.2s ease;
+}
+
+.status-popup-delete-button:hover {
+  background: #fef3f2;
+  color: #b42318;
+}
+
+.status-popup-cancel-button {
+  background: #ffffff;
+  border: 1px solid #d0d5dd;
+  color: #344054;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px 16px;
+  border-radius: 10px;
+  transition: 0.2s ease;
+}
+
+.status-popup-cancel-button:hover {
+  border-color: #4c8df6;
+  color: #4c8df6;
+  background: #f5f9ff;
+}

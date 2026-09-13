@@ -526,6 +526,17 @@
   cursor: pointer;
 }
 
+.comment-submit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.comment-submit-button svg {
+  flex-shrink: 0;
+}
+
 .comment-cancel-button {
   border: 1px solid #d8e0ec;
   border-radius: 9px;
@@ -806,6 +817,8 @@
   bottom: 30px;
 }
 
-.comment-menu-dropdown {
+.-menu-dropdown {
   z-index: 20;
 }
+
+

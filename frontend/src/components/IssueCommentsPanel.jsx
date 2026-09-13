@@ -212,6 +212,7 @@ async function confirmDelete() {
             </button>
 
             <button type="submit" className="comment-submit-button">
+              <MessageCircle size={15} strokeWidth={2.4} />
               Comment
             </button>
           </div>

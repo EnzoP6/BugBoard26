@@ -317,7 +317,7 @@ export default function IssueDetailPage() {
                   setStatusEditMode((currentValue) => !currentValue)
                 }
               >
-                Change status
+               ✎ Change status
               </button>
             )}
 

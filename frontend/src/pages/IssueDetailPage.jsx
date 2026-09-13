@@ -102,6 +102,7 @@ export default function IssueDetailPage() {
   const [saving, setSaving] = useState(false);
   const [users, setUsers] = useState([]);
   const [editMode, setEditMode] = useState(false);
+  const [statusEditMode, setStatusEditMode] = useState(false);
   const [imageFullscreen, setImageFullscreen] = useState(false);
   const [pageMessage, setPageMessage] = useState("");
   const [popupMessage, setPopupMessage] = useState(null);
@@ -204,6 +205,58 @@ export default function IssueDetailPage() {
     }
   }
 
+  async function handleStatusUpdate() {
+    if (!canChangeStatus) {
+      setPageMessage("You do not have permission to change this issue status.");
+      return;
+    }
+  
+    try {
+      setSaving(true);
+      setPageMessage("");
+  
+      await updateIssueStatus(id, status);
+  
+      const refreshed = await getIssueById(id);
+  
+      setIssue(refreshed);
+      setStatus(refreshed.status || "");
+      setStatusEditMode(false);
+  
+      setPopupMessage({
+        type: "success",
+        title: "Status updated",
+        message: "The issue status has been updated successfully.",
+      });
+    } catch (error) {
+      console.error(error);
+  
+      const statusCode = error?.response?.status;
+      const backendMessage = getErrorMessage(error, "");
+  
+      if (statusCode === 403) {
+        setPageMessage(
+          backendMessage ||
+            "You do not have permission to change this issue status."
+        );
+        return;
+      }
+  
+      if (statusCode === 404) {
+        setPageMessage(
+          backendMessage || "Issue not found."
+        );
+        return;
+      }
+  
+      setPageMessage(
+        backendMessage || "Error while updating issue status."
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
   if (loading) {
     return (
       <main className="issue-detail-page">
@@ -255,8 +308,18 @@ export default function IssueDetailPage() {
                 ✎ Edit issue
               </button>
             )}
-
-            
+          
+            {canChangeStatus && !admin && (
+              <button
+                type="button"
+                className="edit-issue-button"
+                onClick={() =>
+                  setStatusEditMode((currentValue) => !currentValue)
+                }
+              >
+                Change status
+              </button>
+            )}
 
           </div>
         </div>
@@ -316,6 +379,52 @@ export default function IssueDetailPage() {
           </aside>
         </section>
 
+        {statusEditMode && canChangeStatus && !admin && (
+          <section className="issue-edit-card">
+            <h2>Change status</h2>
+        
+            <div className="issue-edit-grid">
+              <label>
+                Status
+                <select
+                  value={status}
+                  onChange={(event) => setStatus(event.target.value)}
+                >
+                  <option value="TODO">TODO</option>
+                  <option value="IN_PROGRESS">WORK IN PROGRESS</option>
+                  <option value="RESOLVED">RESOLVED</option>
+                  <option value="CLOSED">CLOSED</option>
+                </select>
+              </label>
+            </div>
+        
+            <div className="issue-edit-actions">
+              <button
+                type="button"
+                className="cancel-edit-button"
+                onClick={() => {
+                  setStatus(issue.status || "");
+                  setStatusEditMode(false);
+                }}
+              >
+                Cancel
+              </button>
+        
+              <button
+                type="button"
+                className="save-edit-button"
+                onClick={handleStatusUpdate}
+                disabled={saving}
+              >
+                <span className="save-button-content">
+                  <Save size={15} strokeWidth={2.4} />
+                  {saving ? "Saving..." : "Save status"}
+                </span>
+              </button>
+            </div>
+          </section>
+        )}
+        
         {editMode && canEditIssue && (
           <section className="issue-edit-card">
             <h2>Edit issue</h2>

@@ -110,7 +110,8 @@ export default function IssueDetailPage() {
   const admin = isAdmin();
 
   const assignedEmail = issue?.assignedToEmail || issue?.assignedTo?.email || "";
-  const canEditIssue = admin || assignedEmail === currentUser?.email;
+  const canEditIssue = admin;
+  const canChangeStatus = assignedEmail === currentUser?.email;
   const canAssignIssue = admin;
   const issueImageUrl = getIssueImageUrl(issue?.imageUrl || issue?.imagePath || issue?.image);
   

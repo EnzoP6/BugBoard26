@@ -302,7 +302,7 @@ async function confirmDelete() {
 
                       {commentToDelete && (
                         <StatusPopup
-                          type="error"
+                          type="confirm"
                           title="Delete comment?"
                           message="Are you sure you want to delete this comment? This action cannot be undone."
                           onClose={() => setCommentToDelete(null)}

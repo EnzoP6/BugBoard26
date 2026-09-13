@@ -359,3 +359,18 @@
 .login-page .input-wrapper input {
   width: 100%;
 }
+
+.login-page .input-wrapper input:focus,
+.login-page .input-wrapper input:focus-visible,
+.login-page .input-wrapper input:invalid,
+.login-page .input-wrapper input:user-invalid {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.login-page .input-wrapper:focus-within {
+  border: 1.5px solid #4c8df6;
+  box-shadow: 0 0 0 4px rgba(76, 141, 246, 0.13);
+  background: #ffffff;
+}

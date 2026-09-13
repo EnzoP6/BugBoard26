@@ -1,8 +1,19 @@
 import { CheckCircle2, AlertTriangle, X, House } from "lucide-react";
 import "./StatusPopup.css";
 
-export default function StatusPopup({type = "success", title, message, onClose, actionLabel, onAction, homeLabel, onHome,}) {
+export default function StatusPopup({
+  type = "success",
+  title,
+  message,
+  onClose,
+  actionLabel,
+  onAction,
+  homeLabel,
+  onHome,
+  variant = "default",
+}) {
   const isSuccess = type === "success";
+  const isDeleteComment = variant === "delete-comment";
 
   return (
     <div className="status-popup-overlay" onClick={onClose}>
@@ -23,40 +34,66 @@ export default function StatusPopup({type = "success", title, message, onClose, 
         </button>
 
         <div className="status-popup-icon">
-          {isSuccess ? <CheckCircle2 size={34} /> : <AlertTriangle size={34} />}
+          {isSuccess ? (
+            <CheckCircle2 size={34} />
+          ) : (
+            <AlertTriangle size={34} />
+          )}
         </div>
 
         <h2>{title}</h2>
         <p>{message}</p>
 
         <div className="status-popup-actions">
-          {homeLabel && onHome && (
-            <button
-              type="button"
-              className="status-popup-home-button"
-              onClick={onHome}
-            >
-              <House size={16} />
-              {homeLabel}
-            </button>
-          )}
+          {isDeleteComment ? (
+            <>
+              <button
+                type="button"
+                className="status-popup-cancel-button"
+                onClick={onClose}
+              >
+                Cancel
+              </button>
 
-          {actionLabel && onAction ? (
-            <button
-              type="button"
-              className="status-popup-button"
-              onClick={onAction}
-            >
-              {actionLabel}
-            </button>
+              <button
+                type="button"
+                className="status-popup-delete-button"
+                onClick={onHome}
+              >
+                Delete
+              </button>
+            </>
           ) : (
-            <button
-              type="button"
-              className="status-popup-button"
-              onClick={onClose}
-            >
-              Got it
-            </button>
+            <>
+              {homeLabel && onHome && (
+                <button
+                  type="button"
+                  className="status-popup-home-button"
+                  onClick={onHome}
+                >
+                  <House size={16} />
+                  {homeLabel}
+                </button>
+              )}
+
+              {actionLabel && onAction ? (
+                <button
+                  type="button"
+                  className="status-popup-button"
+                  onClick={onAction}
+                >
+                  {actionLabel}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="status-popup-button"
+                  onClick={onClose}
+                >
+                  Got it
+                </button>
+              )}
+            </>
           )}
         </div>
       </section>
